@@ -44,7 +44,7 @@ public class Producto
     );
 
     /// <summary>
-    /// Devuelve una representación en texto del producto, en formato CSV.
+    /// Devuelve una representación en texto del producto
     /// </summary>
     /// <returns>Cadena de texto con los datos del producto separados por comas.</returns>
     public override string ToString()
