@@ -24,7 +24,7 @@ namespace Tienda
             if (producto.Stock < cantidad)
             {
                 Console.WriteLine("No hay suficiente stock disponible.");
-                return;
+                return; //hola
             }
 
             /// <summary> Verifica si el producto ya está en el carrito </summary>
