@@ -1,6 +1,0 @@
-101,Camisetas,10,5,Camisetas de lana
-102,Pantalones,25,30,Pantalones en tonos azules
-103,Vestidos,15,4,Vestidos glam
-105,Calcetines,3,364,Calcetines con dibujitos
-103,Pan,1.20,15,Hecho con masa madre
-104,Chocolate,2.50,10,Cultivado en nuestros propios terrenos

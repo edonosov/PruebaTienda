@@ -18,7 +18,7 @@ namespace Tienda
         /// <summary>
         /// Contraseña del usuario (privada).
         /// </summary>
-        private string Password { get; set; }
+       // private string Password { get; set; }
 
         /// <summary>
         /// Rol del usuario (por defecto 'User').
@@ -34,7 +34,7 @@ namespace Tienda
         public Usuario(string nombre, string password, string rol)
         {
             Nombre = nombre;
-            Password = password;
+            //Password = password;
             Rol = rol;
         }
 
@@ -43,9 +43,10 @@ namespace Tienda
         /// </summary>
         /// <param name="password">Contraseña ingresada.</param>
         /// <returns>Verdadero si la contraseña es correcta, falso en caso contrario.</returns>
-        public bool Autenticar(string password)
+        /*public bool Autenticar(string password)
         {
             return Password == password;
-        }
+        }*/
     }
 }
+ 

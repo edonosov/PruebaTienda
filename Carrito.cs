@@ -24,7 +24,7 @@ namespace Tienda
             if (producto.Stock < cantidad)
             {
                 Console.WriteLine("No hay suficiente stock disponible.");
-                return; //hola
+                return; 
             }
 
             /// <summary> Verifica si el producto ya está en el carrito </summary>
@@ -40,6 +40,7 @@ namespace Tienda
             }
 
             producto.Stock -= cantidad;
+            if (producto.Stock < 0) throw new Exception("No puedes comprar tanto, te pasas de la cantidad en stock");
             Console.WriteLine($"Se han añadido {cantidad} unidades de {producto.Nombre} al carrito.");
         }
 
@@ -60,9 +61,9 @@ namespace Tienda
             {
                 decimal subtotal = producto.Precio * cantidad;
                 total += subtotal;
-                Console.WriteLine($"{producto.Nombre} x {cantidad} - Total: {subtotal:C}");
+                Console.WriteLine($"{producto.Nombre} x {cantidad} - Total: {subtotal}€");
             }
-            Console.WriteLine($"Total a pagar: {total:C}");
+            Console.WriteLine($@"Total a pagar: {total}€");
         }
 
         /// <summary>
