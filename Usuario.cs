@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
-namespace Tienda
+﻿namespace Tienda
 {
     /// <summary>
-    /// Representa un usuario en el sistema.
+    /// Representa a un usuario en el sistema.
     /// </summary>
     public class Usuario
     {
@@ -28,9 +23,9 @@ namespace Tienda
         /// <summary>
         /// Constructor de la clase Usuario.
         /// </summary>
-        /// <param name="nombre"></param>
-        /// <param name="password"></param>
-        /// <param name="rol"></param>
+        /// <param name="nombre">Nombre del usuario.</param>
+        /// <param name="password">Contraseña del usuario.</param>
+        /// <param name="rol">Rol del usuario.</param>
         public Usuario(string nombre, string password, string rol)
         {
             Nombre = nombre;
@@ -39,13 +34,14 @@ namespace Tienda
         }
 
         /// <summary>
-        /// Valida si la contraseña es correcta.
+        /// Valida si la contraseña ingresada es correcta.
         /// </summary>
         /// <param name="password">Contraseña ingresada.</param>
-        /// <returns>Verdadero si la contraseña es correcta, falso en caso contrario.</returns>
+        /// <returns>True si la contraseña es correcta, false en caso contrario.</returns>
         public bool Autenticar(string password)
         {
             return Password == password;
         }
     }
 }
+
