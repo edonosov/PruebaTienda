@@ -5,47 +5,74 @@ using System.Linq;
 
 namespace Tienda
 {
-    /// <summary>
-    /// Representa un usuario en el sistema.
-    /// </summary>
     public class Usuario
     {
+        private List<Usuario> usuarios = new List<Usuario>();
         /// <summary>
-        /// Nombre del usuario.
+        /// Nombre del usuario
         /// </summary>
         public string Nombre { get; set; }
-
         /// <summary>
-        /// Contraseña del usuario (privada).
+        /// Contraseña del usuario
         /// </summary>
         private string Password { get; set; }
 
         /// <summary>
-        /// Rol del usuario (por defecto 'User').
+        /// Método para validar a un usuario con su contraseña.
         /// </summary>
-        public string Rol { get; set; } = "User";
 
-        /// <summary>
-        /// Constructor de la clase Usuario.
-        /// </summary>
-        /// <param name="nombre"></param>
-        /// <param name="password"></param>
-        /// <param name="rol"></param>
-        public Usuario(string nombre, string password, string rol)
+        public Usuario(string nombre, string password)
         {
             Nombre = nombre;
             Password = password;
-            Rol = rol;
         }
 
         /// <summary>
-        /// Valida si la contraseña es correcta.
+        /// Valida si la contraseña es la misma que ha introducido el usuario
         /// </summary>
-        /// <param name="password">Contraseña ingresada.</param>
-        /// <returns>Verdadero si la contraseña es correcta, falso en caso contrario.</returns>
+        /// <param name="password"></param>
+        /// <returns></returns>
         public bool Autenticar(string password)
         {
             return Password == password;
         }
+
+        /// <summary>
+        /// Método para obtener un usuario desde un archivo de texto.
+        /// </summary>  
+        /// <param name="nombre">Nombre del usuario a buscar</param>
+        /// <returns>Nuevo Usuario si se encuentra, null si no</returns>
+        #region Obtener
+        public static Usuario Obtener(string nombre)
+        {
+            if (!File.Exists("usuarios.txt")) return null;
+            string[] lineas = File.ReadAllLines("usuarios.txt");
+            foreach (var linea in lineas)
+            {
+                var datos = linea.Split(',');
+                if (datos[0] == nombre)
+                {
+                    return new Usuario(datos[0], datos[1]);
+                }
+            }
+            return null;
+        }
+
+
+        #endregion
+
+        #region CargarUsuarios
+        /// <summary>
+        /// Cargar la lista de usuarios
+        /// </summary>
+
+        private void CargarUsuarios()
+        {
+            usuarios.Add(new Usuario("admin", "admin"));
+            usuarios.Add(new Usuario("cliente", "1234"));
+            usuarios.Add(new Usuario("emma", "emma"));
+        }
+        #endregion
+
     }
 }
