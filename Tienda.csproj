@@ -44,8 +44,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Carrito.cs" />
+    <Compile Include="CarritoItem.cs" />
     <Compile Include="Menu.cs" />
-    <Compile Include="MenuOpciones.cs" />
     <Compile Include="Producto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />

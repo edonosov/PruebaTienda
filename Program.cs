@@ -1,200 +1,175 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using Tienda.Tienda;
 
 namespace Tienda
 {
-    /// <summary>
-    /// Clase principal que ejecuta el programa de la tienda.
-    /// Maneja la lógica del menú y las operaciones de productos y carrito.
-    /// </summary>
     public class Program
     {
         /// <summary>
+        /// Lista de usuarios registrados en el sistema.
+        /// </summary>
+        private static List<Usuario> usuarios = new List<Usuario>();
+
+        /// <summary>
         /// Lista de productos disponibles en la tienda.
-        /// Se cargan desde un archivo al iniciar el programa.
         /// </summary>
         private static List<Producto> productos = Producto.CargarProductos();
 
         /// <summary>
-        /// se almacenan los productos que el usuario quiere comprar.
+        /// Instancia del carrito de compras.
         /// </summary>
         private static Carrito carrito = new Carrito();
 
         /// <summary>
-        /// Método principal del programa.
-        /// Muestra los menús de administrador y usuario, y permite seleccionar opciones.
+        /// Método principal del programa. Muestra el menú de usuario y administrador.
         /// </summary>
         static void Main()
         {
-            ///<summary> Opciones comunes a ambos menús </summary>
-            var opcionesGenerales = new Dictionary<OpcionMenu, Action>
+            var opcionesAdmin = new List<Opciones>
             {
-                { OpcionMenu.ListarProductos, ListarProductos }
+            /// <summary>
+            /// Opciones disponibles para el administrador en el menú.
+            /// </summary>
+                new Opciones(1, "Listar Productos", "(Muestra todos los productos disponibles)"),
+                new Opciones(2, "Añadir Producto", "(Permite agregar un nuevo producto)"),
+                new Opciones(3, "Eliminar Producto", "(Elimina un producto de la lista)"),
+                new Opciones(4, "Salir", "(Salir del menú de administrador)")
             };
 
-            /// <summary>Menú del Administrador con opciones específicas</summary>
-            var menuAdmin = new MenuOpciones("Menú Administrador", new Dictionary<OpcionMenu, Action>(opcionesGenerales)
+            var opcionesUsuario = new List<Opciones>
             {
-                { OpcionMenu.AgregarProducto, AgregarProducto },
-                { OpcionMenu.EliminarProducto, EliminarProducto },
-                { OpcionMenu.Salir, () => Console.WriteLine("Saliendo del menú administrador...") }
-            });
-
-            /// <summary> Menú del Usuario con opciones específicas </summary>
-            var menuUsuario = new MenuOpciones("Menú Usuario", new Dictionary<OpcionMenu, Action>(opcionesGenerales)
-            {
-                { OpcionMenu.ComprarProducto, ComprarProducto },
-                { OpcionMenu.VerCarrito, carrito.VerCarrito },
-                { OpcionMenu.Salir, () => Console.WriteLine("Saliendo del menú usuario...") }
-            });
-
-
-
-            /// <summary> 
-            /// Bucle principal de ejecución del programa, verifica que la opción es válida y si no da error. Si si, ejecuta la opcion correspondiente.
+            /// <summary>
+            /// Opciones disponibles para el usuario en el menú.
             /// </summary>
+                new Opciones(1, "Comprar", "(Realizar una compra de productos)"),
+                new Opciones(2, "Listar Productos", "(Ver la lista de productos disponibles)"),
+                new Opciones(3, "Ver Carrito", "(Revisar el carrito de compras)"),
+                new Opciones(4, "Salir", "(Salir del menú de usuario)")
+            };
+
+            var menuAdmin = new Menu("Menú Administrador", opcionesAdmin);
+            var menuUsuario = new Menu("Menú Usuario", opcionesUsuario);
 
             while (true)
             {
-                Console.WriteLine("Seleccione usuario:\n1. Admin\n2. Usuario\n3. Salir");
-                if (!int.TryParse(Console.ReadLine(), out int opcionUsuario) || opcionUsuario < 1 || opcionUsuario > 3)
+                Console.WriteLine("Seleccione el tipo de usuario: \n1. Administrador \n2. Usuario \n3. Salir");
+                string opcionUsuario = Console.ReadLine();
+
+                if (opcionUsuario == "1")
+                {
+                    menuAdmin.MostrarMenu();
+                    Console.Write("Seleccione una opción: ");
+                    int opcion = int.Parse(Console.ReadLine());
+                    if (opcion == 1) ListarProductos();
+                    else if (opcion == 2) AgregarProducto();
+                    else if (opcion == 3) EliminarProducto();
+                }
+                else if (opcionUsuario == "2")
+                {
+                    menuUsuario.MostrarMenu();
+                    Console.Write("Seleccione una opción: ");
+                    int opcion = int.Parse(Console.ReadLine());
+                    if (opcion == 1) ComprarProducto();
+                    else if (opcion == 2) ListarProductos();
+                    else if (opcion == 3) carrito.VerCarrito();
+                }
+                else if (opcionUsuario == "3")
+                {
+                    Console.WriteLine("¡Adiós!");
+                    break;
+                }
+                else
                 {
                     Console.WriteLine("Opción no válida. Intente de nuevo.");
-                    continue;
                 }
-
-                if (opcionUsuario == 3) break;
-                (opcionUsuario == 1 ? menuAdmin : menuUsuario).Ejecutar();
             }
-        }
-
-        /// <summary>
-        /// Solicita al usuario un número dentro de un rango válido.
-        /// </summary>
-        /// <param name="mensaje">Mensaje que se muestra al usuario.</param>
-        /// <param name="min">Valor mínimo permitido.</param>
-        /// <param name="max">Valor máximo permitido.</param>
-        /// <returns>El número ingresado por el usuario.</returns>
-        public static int ObtenerOpcion(string mensaje, int min, int max)
-        {
-            int opcion;
-            do Console.Write(mensaje + " ");
-            while (!int.TryParse(Console.ReadLine(), out opcion) || opcion < min || opcion > max);
-            return opcion;
         }
 
         /// <summary>
         /// Muestra la lista de productos disponibles en la tienda.
         /// </summary>
-        private static void ListarProductos() =>
-            Console.WriteLine("\n" + string.Join("\n", productos));
+        private static void ListarProductos()
+        {
+            Console.WriteLine("\nLista de productos disponibles:");
+            foreach (var producto in productos)
+            {
+                Console.WriteLine(producto);
+            }
+        }
 
         /// <summary>
-        /// Permite agregar un nuevo producto a la tienda solicitando datos al usuario
+        /// Permite al administrador agregar un nuevo producto a la tienda.
         /// </summary>
         private static void AgregarProducto()
         {
-            productos.Add(new Producto
-            {
-                Id = ObtenerOpcion("ID del producto:", 1, int.MaxValue),
-                Nombre = ObtenerTexto("Nombre del producto:"),
-                Precio = ObtenerDecimal("Precio del producto:"),
-                Stock = ObtenerOpcion("Cantidad disponible:", 0, int.MaxValue),
-                Descripcion = ObtenerTexto("Descripción del producto (opcional):")
-            });
+            Console.Write("Ingrese el ID del producto: ");
+            int id = int.Parse(Console.ReadLine());
+            Console.Write("Ingrese el nombre del producto: ");
+            string nombre = Console.ReadLine();
+            Console.Write("Ingrese el precio del producto: ");
+            decimal precio = decimal.Parse(Console.ReadLine());
+            Console.Write("Ingrese la cantidad disponible: ");
+            int cantidad = int.Parse(Console.ReadLine());
+
+            productos.Add(new Producto(id, nombre, precio, cantidad));
             Producto.GuardarProductos(productos);
+            Console.WriteLine("Producto agregado exitosamente.");
         }
 
         /// <summary>
-        /// Permite eliminar un producto de la tienda mediante su ID.
+        /// Permite al administrador eliminar un producto existente de la tienda.
         /// </summary>
         private static void EliminarProducto()
         {
-            int id = ObtenerOpcion("ID del producto a eliminar:", 1, int.MaxValue);
-            if (productos.RemoveAll(p => p.Id == id) > 0)
+            Console.Write("Ingrese el ID del producto a eliminar: ");
+            int id = int.Parse(Console.ReadLine());
+            var producto = productos.FirstOrDefault(p => p.Id == id);
+
+            if (producto != null)
+            {
+                productos.Remove(producto);
                 Producto.GuardarProductos(productos);
-            else Console.WriteLine("Producto no encontrado.");
+                Console.WriteLine("Producto eliminado exitosamente.");
+            }
+            else
+            {
+                Console.WriteLine("Producto no encontrado.");
+            }
         }
 
         /// <summary>
-        /// Permite al usuario comprar un producto seleccionando su ID y cantidad.
+        /// Permite al usuario comprar un producto de la tienda.
         /// </summary>
         private static void ComprarProducto()
         {
             ListarProductos();
-            int id = ObtenerOpcion("ID del producto que desea comprar:", 1, int.MaxValue);
+            Console.Write("Ingrese el ID del producto que desea comprar: ");
+            int id = int.Parse(Console.ReadLine());
             var producto = productos.FirstOrDefault(p => p.Id == id);
 
             if (producto != null && producto.Stock > 0)
             {
-                int cantidad = ObtenerOpcion("Cantidad a comprar:", 1, producto.Stock);
-                carrito.AgregarAlCarrito(producto, cantidad);
-                producto.Stock -= cantidad;
-                Producto.GuardarProductos(productos);
+                Console.Write("Ingrese la cantidad a comprar: ");
+                int cantidad = int.Parse(Console.ReadLine());
+
+                if (cantidad <= producto.Stock)
+                {
+                    carrito.AgregarAlCarrito(producto, cantidad);
+                    producto.Stock -= cantidad;
+                    Producto.GuardarProductos(productos);
+                    Console.WriteLine("Producto agregado al carrito.");
+                }
+                else
+                {
+                    Console.WriteLine("No hay suficiente stock disponible.");
+                }
             }
-            else Console.WriteLine("Producto no encontrado o sin stock.");
+            else
+            {
+                Console.WriteLine("Producto no encontrado o sin stock.");
+            }
         }
-
-        /// <summary>
-        /// Solicita al usuario un valor decimal dentro de un rango válido.
-        /// </summary>
-        /// <param name="mensaje">Mensaje que se muestra al usuario.</param>
-        /// <returns>El valor decimal ingresado por el usuario.</returns>
-        private static decimal ObtenerDecimal(string mensaje)
-        {
-            decimal valor;
-            do Console.Write(mensaje + " ");
-            while (!decimal.TryParse(Console.ReadLine(), out valor) || valor <= 0);
-            return valor;
-        }
-
-        /// <summary>
-        /// Solicita al usuario una entrada de texto.
-        /// </summary>
-        /// <param name="mensaje">Mensaje que se muestra al usuario.</param>
-        /// <returns>La cadena de texto ingresada por el usuario.</returns>
-        private static string ObtenerTexto(string mensaje)
-        {
-            Console.Write(mensaje + " ");
-            return Console.ReadLine();
-        }
-    }
-
-    /// <summary>
-    /// Enumeración de las opciones disponibles en el menú de la tienda.
-    /// </summary>
-    public enum OpcionMenu
-    {
-        /// <summary>
-        /// Opción para listar los productos disponibles en la tienda.
-        /// </summary>
-        ListarProductos = 1,
-
-        /// <summary>
-        /// Opción para agregar un nuevo producto a la tienda.
-        /// </summary>
-        AgregarProducto = 2,
-
-        /// <summary>
-        /// Opción para eliminar un producto de la tienda.
-        /// </summary>
-        EliminarProducto = 3,
-
-        /// <summary>
-        /// Opción para comprar un producto y agregarlo al carrito.
-        /// </summary>
-        ComprarProducto = 4,
-
-        /// <summary>
-        /// Opción para ver los productos que hay en el carrito de compras.
-        /// </summary>
-        VerCarrito = 5,
-
-        /// <summary>
-        /// Opción para salir del menú y terminar el programa.
-        /// </summary>
-        Salir = 6
     }
 }

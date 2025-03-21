@@ -1,77 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Tienda
 {
-    /// <summary>
-    /// Representa el carrito de compras, almacenando los productos y sus cantidades.
-    /// </summary>
-    public class Carrito
+    using System;
+    using System.Collections.Generic;
+
+    namespace Tienda
     {
-        /// <summary>
-        /// Lista de productos en el carrito junto con sus cantidades
-        /// </summary>
-        private List<(Producto producto, int cantidad)> Items { get; set; } = new List<(Producto, int)>();
-
-        /// <summary>
-        /// Agrega un producto al carrito en la cantidad especificada.
-        /// </summary>
-        /// <param name="producto">El producto que se desea agregar.</param>
-        /// <param name="cantidad">La cantidad del producto a añadir.</param>
-        public void AgregarAlCarrito(Producto producto, int cantidad)
+        public class Carrito
         {
-            if (producto.Stock < cantidad)
+            public List<CarritoItem> Items { get; private set; } = new List<CarritoItem>();
+
+            /// <summary>
+            /// Agrega un producto al carrito
+            /// </summary>
+            public void AgregarAlCarrito(Producto producto, int cantidad)
             {
-                Console.WriteLine("No hay suficiente stock disponible.");
-                return; //hola
+                Items.Add(new CarritoItem(producto, cantidad));
+                producto.Stock -= cantidad;
             }
 
-            /// <summary> Verifica si el producto ya está en el carrito </summary>
-            var itemExistente = Items.FirstOrDefault(i => i.producto.Id == producto.Id);
-            if (itemExistente.producto != null)
+            /// <summary>
+            /// Muestra los productos en el carrito
+            /// </summary>
+            public void VerCarrito()
             {
-                Items.Remove(itemExistente);
-                Items.Add((producto, itemExistente.cantidad + cantidad));
+                Console.WriteLine("\nCarrito de compras:");
+                foreach (var item in Items)
+                {
+                    Console.WriteLine(item);
+                }
             }
-            else
-            {
-                Items.Add((producto, cantidad));
-            }
-
-            producto.Stock -= cantidad;
-            Console.WriteLine($"Se han añadido {cantidad} unidades de {producto.Nombre} al carrito.");
-        }
-
-        /// <summary>
-        /// Muestra los productos en el carrito con sus cantidades y el total a pagar.
-        /// </summary>
-        public void VerCarrito()
-        {
-            if (Items.Count == 0)
-            {
-                Console.WriteLine("El carrito está vacío.");
-                return;
-            }
-
-            Console.WriteLine("\nCarrito de compras:");
-            decimal total = 0;
-            foreach (var (producto, cantidad) in Items)
-            {
-                decimal subtotal = producto.Precio * cantidad;
-                total += subtotal;
-                Console.WriteLine($"{producto.Nombre} x {cantidad} - Total: {subtotal:C}");
-            }
-            Console.WriteLine($"Total a pagar: {total:C}");
-        }
-
-        /// <summary>
-        /// Vacía el carrito de compras
-        /// </summary>
-        public void VaciarCarrito()
-        {
-            Items.Clear();
-            Console.WriteLine("El carrito ha sido vaciado.");
         }
     }
+
 }
